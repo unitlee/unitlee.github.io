@@ -2,13 +2,13 @@ import { PanoramaFishEye } from "@mui/icons-material";
 import { Card, CardActionArea, CardContent, Stack, Typography } from "@mui/material";
 import { createSearchParams, useNavigate } from "react-router-dom";
 
-export default function BoardCard({ title, color, disabled }) {
+export default function BoardCard({ team, disabled }) {
   const navigate = useNavigate();
 
   const handleCardClick = () => {
     navigate({
-      pathname: `/timer/${title}`,
-      search: createSearchParams({ color: color }).toString(),
+      pathname: `/timer/${team.name}`,
+      search: createSearchParams({ color: team.color }).toString(),
     });
   };
 
@@ -27,9 +27,9 @@ export default function BoardCard({ title, color, disabled }) {
       <CardActionArea onClick={handleCardClick} disabled={disabled}>
         <CardContent>
           <Stack direction="row" alignItems="center" spacing={3}>
-            <PanoramaFishEye sx={{ color: { color }, fontSize: "100px" }} />
+            <PanoramaFishEye sx={{ color: team.color, fontSize: "100px" }} />
             <Typography variant="h2" textAlign="center">
-              {title}
+              {team.name}
             </Typography>
           </Stack>
         </CardContent>

@@ -21,7 +21,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && del /Q /F ..\\index.html ..\\favicon.ico ..\\asset-manifest.json && rmdir /S /Q ..\\static ..\\musics && move build\\* ..\\ && move build\\musics ..\\ && move build\\static ..\\",
+    "build": "react-scripts build && del /Q /F ..\\index.html ..\\favicon.ico ..\\asset-manifest.json && rmdir /S /Q ..\\static ..\\musics ..\\images && move build\\* ..\\ && move build\\musics ..\\ && move build\\images ..\\ && move build\\static ..\\",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

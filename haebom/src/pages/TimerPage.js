@@ -1,5 +1,5 @@
 import { ArrowBack, PanoramaFishEye, PlayArrow, Stop } from "@mui/icons-material";
-import { Box, Card, CardContent, IconButton, Stack, Typography } from "@mui/material";
+import { Backdrop, Box, Card, CardContent, IconButton, Stack, Typography } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
@@ -13,7 +13,7 @@ export default function TimerPage() {
   const [searchParams] = useSearchParams();
   const { team } = useParams();
   const color = searchParams.get("color");
-  const audioRef = useRef(null); // Audio 객체를 ref로 관리
+  const audioRef = useRef(null);
 
   const formatTimeDelta = (timedelta) => {
     const [mm, ss, ms] = [
@@ -30,11 +30,9 @@ export default function TimerPage() {
   };
 
   useEffect(() => {
-    // Audio 객체 초기화
     audioRef.current = new Audio("/musics/bgm1.mp3");
     audioRef.current.load();
 
-    // 컴포넌트가 언마운트될 때 정리
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
@@ -76,62 +74,63 @@ export default function TimerPage() {
     }
   };
 
-  const getMusicComponent = () => {
-    return isRunning ? (
-      <IconButton onClick={onStop}>
-        <Stop sx={{ fontSize: "100px" }} />
-      </IconButton>
-    ) : (
-      <IconButton onClick={onRun}>
-        <PlayArrow sx={{ fontSize: "100px" }} />
-      </IconButton>
-    );
-  };
-
   const goBackAndSave = () => {
     localStorage.setItem(team, remainingTime);
     navigate("/");
   };
 
   return (
-    <Card
-      sx={{
-        height: "75vh",
-        width: "1000px",
-        borderRadius: 10,
-        backgroundColor: "rgba(238, 238, 238, 0.9)",
-      }}
-    >
-      <CardContent
+    <>
+      <Card
         sx={{
-          display: "flex",
-          justifyContent: "center",
+          height: "80vh",
+          width: "1000px",
+          borderRadius: 10,
+          backgroundColor: "rgba(238, 238, 238, 0.9)",
           alignItems: "center",
-          width: "100%",
-          height: "100%",
+          display: "flex",
         }}
       >
-        <Stack spacing={5}>
+        <CardContent
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "100%",
+            height: "80%",
+          }}
+        >
           <Stack direction="row" alignItems="center" spacing={3}>
             <PanoramaFishEye sx={{ color: color, fontSize: "100px" }} />
-            <Typography variant="h2" textAlign="center">
-              {team}
-            </Typography>
+            <Typography variant="h2">{team}</Typography>
           </Stack>
-          <Typography variant="h1" textAlign="center" color={numberColor}>
+
+          <Typography fontSize="150px" textAlign="center" color={numberColor}>
             {formatTimeDelta(remainingTime)}
           </Typography>
-          <Box textAlign="center">
-            {isFinish ? (
-              <IconButton onClick={goBackAndSave}>
-                <ArrowBack sx={{ fontSize: "100px" }} />
+
+          <Box>
+            {isRunning ? (
+              <IconButton onClick={onStop}>
+                <Stop sx={{ fontSize: "100px" }} />
               </IconButton>
             ) : (
-              getMusicComponent()
+              <IconButton onClick={onRun}>
+                <PlayArrow sx={{ fontSize: "100px" }} />
+              </IconButton>
             )}
           </Box>
-        </Stack>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+      <Backdrop
+        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+        open={isFinish}
+      >
+        <IconButton onClick={goBackAndSave} sx={{ bgcolor: color, color: "#FFFFFF" }}>
+          <ArrowBack sx={{ fontSize: "100px" }} />
+        </IconButton>
+      </Backdrop>
+    </>
   );
 }
