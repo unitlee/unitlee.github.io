@@ -35,7 +35,7 @@ const PageRoute = () => {
     >
       <Routes location={displayLocation}>
         <Route path="/" element={<BoardPage teams={teams} />} />
-        <Route path="/ranking" element={<RankingPage />} />
+        <Route path="/ranking" element={<RankingPage initialTeams={teams} />} />
         <Route path="/timer/:team" element={<TimerPage />} />
         <Route path="/*" element={<NotFoundPage />} />
       </Routes>
