@@ -1,5 +1,5 @@
 import { ArrowBack, PanoramaFishEye, PlayArrow, Stop } from "@mui/icons-material";
-import { Backdrop, Box, Card, CardContent, IconButton, Stack, Typography } from "@mui/material";
+import { Backdrop, Box, IconButton, Stack, Typography } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
@@ -7,7 +7,7 @@ export default function TimerPage() {
   const [remainingTime, setRemainingTime] = useState(10 * 60 * 1000);
   const [isRunning, setIsRunning] = useState(false);
   const [isFinish, setIsFinish] = useState(false);
-  const [numberColor, setNumberColor] = useState("#000000");
+  const [numberColor, setNumberColor] = useState("#FFFFFF");
   const interval = useRef();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -46,7 +46,9 @@ export default function TimerPage() {
       interval.current = setInterval(() => {
         setRemainingTime((prev) => Math.max(prev - 10, 0));
 
-        if (remainingTime <= 1 * 60 * 1000) {
+        if (remainingTime <= 0) {
+          onStop();
+        } else if (remainingTime <= 1 * 60 * 1000) {
           setNumberColor("#FF0000");
         } else if (remainingTime <= 5 * 60 * 1000) {
           setNumberColor("#FF8000");
@@ -74,55 +76,67 @@ export default function TimerPage() {
     }
   };
 
+  const calculateScore = (remainingTime) => {
+    return 10 * 60 * 1000 - remainingTime;
+  };
+
   const goBackAndSave = () => {
-    localStorage.setItem(team, remainingTime);
+    const score = calculateScore(remainingTime);
+    localStorage.setItem(team, score);
     navigate("/");
   };
 
   return (
-    <>
-      <Card
-        sx={{
-          height: "80vh",
-          width: "1000px",
-          borderRadius: 10,
-          backgroundColor: "rgba(238, 238, 238, 0.9)",
-          alignItems: "center",
-          display: "flex",
+    <div
+      style={{
+        height: "100vh",
+        width: "100vw",
+        position: "relative",
+        backgroundImage: "url('/images/game.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          zIndex: 0,
         }}
-      >
-        <CardContent
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "100%",
-            height: "80%",
-          }}
-        >
-          <Stack direction="row" alignItems="center" spacing={3}>
-            <PanoramaFishEye sx={{ color: color, fontSize: "100px" }} />
-            <Typography variant="h2">{team}</Typography>
-          </Stack>
+      ></div>
 
-          <Typography fontSize="150px" textAlign="center" color={numberColor}>
-            {formatTimeDelta(remainingTime)}
-          </Typography>
+      <Stack direction="row" alignItems="center" spacing={3} style={{ zIndex: 1 }}>
+        <PanoramaFishEye sx={{ color: color, fontSize: "100px" }} />
+        <Typography variant="h2" style={{ color: "#FFFFFF" }}>
+          {team}
+        </Typography>
+      </Stack>
 
-          <Box>
-            {isRunning ? (
-              <IconButton onClick={onStop}>
-                <Stop sx={{ fontSize: "100px" }} />
-              </IconButton>
-            ) : (
-              <IconButton onClick={onRun}>
-                <PlayArrow sx={{ fontSize: "100px" }} />
-              </IconButton>
-            )}
-          </Box>
-        </CardContent>
-      </Card>
+      <Typography fontSize="150px" textAlign="center" style={{ color: numberColor, zIndex: 1 }}>
+        {formatTimeDelta(remainingTime)}
+      </Typography>
+
+      <Box style={{ zIndex: 1 }}>
+        {isRunning ? (
+          <IconButton onClick={onStop}>
+            <Stop sx={{ fontSize: "100px", color: "#FFFFFF" }} />
+          </IconButton>
+        ) : (
+          <IconButton onClick={onRun}>
+            <PlayArrow sx={{ fontSize: "100px", color: "#FFFFFF" }} />
+          </IconButton>
+        )}
+      </Box>
+
       <Backdrop
         sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
         open={isFinish}
@@ -131,6 +145,6 @@ export default function TimerPage() {
           <ArrowBack sx={{ fontSize: "100px" }} />
         </IconButton>
       </Backdrop>
-    </>
+    </div>
   );
 }

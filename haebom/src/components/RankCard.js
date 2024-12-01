@@ -1,7 +1,7 @@
 import { Box, Card, CardContent, Stack, Typography } from "@mui/material";
 import React, { useLayoutEffect, useRef } from "react";
 
-export default function RankCard({ team, index }) {
+export default function RankCard({ team, index, quiz }) {
   const cardRef = useRef(null);
   const prevPositionRef = useRef(null);
 
@@ -91,10 +91,20 @@ export default function RankCard({ team, index }) {
             <Typography variant="h2" textAlign="center">
               {team.name}
             </Typography>
-            {team.time !== 10 * 60 * 1000 && (
-              <Typography variant="h3">{formatTimeDelta(team.time)}</Typography>
+            {team.score !== 10 * 60 * 1000 && (
+              <>
+                <Stack>
+                  <Typography textAlign="right">
+                    {formatTimeDelta(localStorage.getItem(team.name))}
+                  </Typography>
+                  <Typography>- {formatTimeDelta(quiz)}</Typography>
+                </Stack>
+              </>
             )}
             <Box sx={{ flexGrow: 1 }} />
+            {team.score !== 10 * 60 * 1000 && (
+              <Typography variant="h3">{formatTimeDelta(team.score)}</Typography>
+            )}
             <Card
               sx={{
                 backgroundColor: getBackgroundColor(),
