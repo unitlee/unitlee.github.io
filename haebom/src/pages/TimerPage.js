@@ -76,13 +76,8 @@ export default function TimerPage() {
     }
   };
 
-  const calculateScore = (remainingTime) => {
-    return 10 * 60 * 1000 - remainingTime;
-  };
-
   const goBackAndSave = () => {
-    const score = calculateScore(remainingTime);
-    localStorage.setItem(team, score);
+    localStorage.setItem(team, remainingTime);
     navigate("/");
   };
 

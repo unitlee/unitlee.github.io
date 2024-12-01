@@ -74,6 +74,10 @@ export default function RankCard({ team, index, quiz }) {
     return "#eee";
   };
 
+  const calculateScore = (remainingTime) => {
+    return 10 * 60 * 1000 - remainingTime;
+  };
+
   return (
     <>
       <Card
@@ -91,20 +95,16 @@ export default function RankCard({ team, index, quiz }) {
             <Typography variant="h2" textAlign="center">
               {team.name}
             </Typography>
-            {team.score !== 10 * 60 * 1000 && (
-              <>
-                <Stack>
-                  <Typography textAlign="right">
-                    {formatTimeDelta(localStorage.getItem(team.name))}
-                  </Typography>
-                  <Typography>- {formatTimeDelta(quiz)}</Typography>
-                </Stack>
-              </>
+            {team.score > 0 && (
+              <Stack>
+                <Typography textAlign="right">
+                  게임: {formatTimeDelta(calculateScore(localStorage.getItem(team.name)))}
+                </Typography>
+                <Typography>퀴즈: {quiz}</Typography>
+              </Stack>
             )}
             <Box sx={{ flexGrow: 1 }} />
-            {team.score !== 10 * 60 * 1000 && (
-              <Typography variant="h3">{formatTimeDelta(team.score)}</Typography>
-            )}
+            {team.score > 0 && <Typography variant="h3">{team.score}</Typography>}
             <Card
               sx={{
                 backgroundColor: getBackgroundColor(),

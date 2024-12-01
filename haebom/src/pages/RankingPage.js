@@ -11,7 +11,7 @@ export default function RankingPage({ initialTeams }) {
   const [teams, setTeams] = useState(() => {
     return initialTeams.map((team) => ({
       ...team,
-      score: 10 * 60 * 1000,
+      score: 0,
       prevRank: 0,
       rank: 0,
     }));
@@ -32,18 +32,9 @@ export default function RankingPage({ initialTeams }) {
     };
   }, []);
 
-  const formatTimeDelta = (timedelta) => {
-    const [mm, ss, ms] = [
-      Math.floor(timedelta / (60 * 1000)),
-      Math.floor((timedelta % (60 * 1000)) / 1000),
-      Math.floor((timedelta % 1000) / 10),
-    ].map((x) =>
-      x.toLocaleString("en-US", {
-        minimumIntegerDigits: 2,
-        useGrouping: false,
-      })
-    );
-    return `${mm}:${ss}:${ms}`;
+  const calculateScore = (remainingTime) => {
+    const minutesLeft = Math.floor(remainingTime / (60 * 1000));
+    return Math.max(0, 10 * (minutesLeft + 1));
   };
 
   useEffect(() => {
@@ -57,18 +48,22 @@ export default function RankingPage({ initialTeams }) {
         ...team,
         score:
           idx <= currentIndex
-            ? localStorage.getItem(team.name) - localStorage.getItem(`${team.name}Quiz`)
-            : 10 * 60 * 1000,
+            ? parseInt(calculateScore(localStorage.getItem(team.name))) +
+              parseInt(localStorage.getItem(`${team.name}Quiz`))
+            : 0,
         rank: 0,
         isFixed: false,
       }));
 
-      const sortedTeams = nextTeams.sort((a, b) => a.score - b.score);
+      const sortedTeams = nextTeams.sort((a, b) => {
+        if (a.score === b.score) {
+          return parseInt(localStorage.getItem(b.name)) - parseInt(localStorage.getItem(a.name));
+        }
+        return b.score - a.score;
+      });
       let rank = 0;
 
       for (const sortedTeam of sortedTeams) {
-        console.log(formatTimeDelta(sortedTeam.score));
-        let cnt = 0;
         for (const nextTeam of nextTeams) {
           if (nextTeam.isFixed) {
             continue;
@@ -76,11 +71,9 @@ export default function RankingPage({ initialTeams }) {
           if (sortedTeam.score === nextTeam.score) {
             nextTeam.rank = rank;
             nextTeam.isFixed = true;
-            cnt++;
+            rank++;
           }
         }
-
-        rank += cnt;
       }
 
       for (const nextTeam of nextTeams) {
